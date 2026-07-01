@@ -1,0 +1,37 @@
+{
+  "name": "resume-matcher",
+  "description": "Analyzes a resume against a job description and produces an ATS-style compatibility analysis.",
+  "instruction": { "$file": "instruction.md" },
+  "toolsets": ["POD"],
+  "visibility": "POD",
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "applications",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      },
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "resumes",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read"
+        ]
+      },
+      {
+        "resource_type": "function",
+        "resource_name": "match_resume",
+        "permission_ids": [
+          "function.read",
+          "function.execute"
+        ]
+      }
+
+    ]
+  }
+}

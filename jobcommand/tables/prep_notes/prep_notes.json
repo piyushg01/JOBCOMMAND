@@ -1,0 +1,82 @@
+{
+  "name": "prep_notes",
+  "primary_key_column": "id",
+  "enable_rls": true,
+  "visibility": "POD",
+  "columns": [
+    {
+      "name": "application_id",
+      "type": "UUID",
+      "required": true,
+      "foreign_key": {
+        "references": "applications.id"
+      }
+    },
+    {
+      "name": "version",
+      "type": "INTEGER",
+      "required": true,
+      "default": 1
+    },
+    {
+      "name": "company_summary",
+      "type": "TEXT",
+      "required": true
+    },
+    {
+      "name": "role_summary",
+      "type": "TEXT",
+      "required": true
+    },
+    {
+      "name": "likely_questions",
+      "type": "JSON",
+      "required": true
+    },
+    {
+      "name": "technical_topics",
+      "type": "JSON"
+    },
+    {
+      "name": "behavioral_questions",
+      "type": "JSON"
+    },
+    {
+      "name": "resume_talking_points",
+      "type": "JSON"
+    },
+    {
+      "name": "company_values",
+      "type": "JSON"
+    },
+    {
+      "name": "salary_tips",
+      "type": "TEXT"
+    },
+    {
+      "name": "interview_rounds",
+      "type": "JSON"
+    },
+    {
+      "name": "confidence_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "generated_by",
+      "type": "TEXT"
+    },
+    {
+      "name": "generated_at",
+      "type": "DATETIME"
+    },
+    {
+      "name": "last_reviewed",
+      "type": "DATETIME"
+    },
+    {
+      "name": "notes",
+      "type": "TEXT"
+    }
+  ],
+  "config": {}
+}

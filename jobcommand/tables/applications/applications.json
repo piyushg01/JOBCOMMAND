@@ -1,0 +1,78 @@
+{
+  "name": "applications",
+  "primary_key_column": "id",
+  "enable_rls": true,
+  "visibility": "POD",
+  "columns": [
+    {
+      "name": "company_name",
+      "type": "TEXT",
+      "required": true,
+      "max_length": 200
+    },
+    {
+      "name": "role_title",
+      "type": "TEXT",
+      "required": true,
+      "max_length": 200
+    },
+    {
+      "name": "job_description",
+      "type": "TEXT",
+      "required": true
+    },
+    {
+      "name": "resume_version",
+      "type": "TEXT",
+      "required": true
+    },
+    {
+      "name": "application_date",
+      "type": "DATE",
+      "required": true
+    },
+    {
+      "name": "status",
+      "type": "ENUM",
+      "required": true,
+      "default": "Applied",
+      "options": [
+        "Applied",
+        "Screening",
+        "Interview",
+        "Offer",
+        "Rejected"
+      ]
+    },
+    {
+      "name": "match_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "missing_skills",
+      "type": "JSON"
+    },
+    {
+      "name": "matched_skills",
+      "type": "JSON"
+    },
+    {
+      "name": "resume_suggestions",
+      "type": "JSON"
+    },
+    {
+      "name": "followup_required",
+      "type": "BOOLEAN",
+      "default": false
+    },
+    {
+      "name": "last_followup_date",
+      "type": "DATE"
+    },
+    {
+      "name": "notes",
+      "type": "TEXT"
+    }
+  ],
+  "config": {}
+}

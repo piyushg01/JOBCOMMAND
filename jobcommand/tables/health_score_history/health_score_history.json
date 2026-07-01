@@ -1,0 +1,87 @@
+{
+  "name": "health_score_history",
+  "primary_key_column": "id",
+  "enable_rls": true,
+  "visibility": "POD",
+  "columns": [
+    {
+      "name": "overall_score",
+      "type": "INTEGER",
+      "required": true
+    },
+    {
+      "name": "grade",
+      "type": "ENUM",
+      "required": true,
+      "options": [
+        "Exceptional",
+        "Strong",
+        "Good",
+        "Needs_Work",
+        "Critical"
+      ]
+    },
+    {
+      "name": "activity_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "match_quality_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "followup_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "pipeline_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "interview_score",
+      "type": "INTEGER"
+    },
+    {
+      "name": "applications_this_week",
+      "type": "INTEGER"
+    },
+    {
+      "name": "average_match_score",
+      "type": "FLOAT"
+    },
+    {
+      "name": "pending_followups",
+      "type": "INTEGER"
+    },
+    {
+      "name": "active_pipeline_stages",
+      "type": "INTEGER"
+    },
+    {
+      "name": "interview_conversion_rate",
+      "type": "FLOAT"
+    },
+    {
+      "name": "weakest_factor",
+      "type": "TEXT"
+    },
+    {
+      "name": "ai_tips",
+      "type": "JSON"
+    },
+    {
+      "name": "calculation_reason",
+      "type": "TEXT"
+    },
+    {
+      "name": "generated_by",
+      "type": "TEXT"
+    },
+    {
+      "name": "calculated_at",
+      "type": "DATETIME",
+      "required": true
+    }
+  ],
+  "config": {}
+}

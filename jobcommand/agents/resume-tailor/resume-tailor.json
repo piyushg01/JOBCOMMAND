@@ -1,0 +1,37 @@
+{
+  "name": "resume-tailor",
+  "description": "Creates an ATS-optimized resume tailored for a specific job while preserving factual accuracy.",
+  "instruction": { "$file": "instruction.md" },
+  "toolsets": ["POD"],
+  "visibility": "POD",
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "applications",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read"
+        ]
+      },
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "resumes",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      },
+      {
+        "resource_type": "function",
+        "resource_name": "tailor_resume",
+        "permission_ids": [
+          "function.read",
+          "function.execute"
+        ]
+      }
+
+    ]
+  }
+}

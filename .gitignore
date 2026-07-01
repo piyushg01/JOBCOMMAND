@@ -1,0 +1,9 @@
+node_modules/
+.venv/
+.env
+dist/
+build/
+*.log
+__pycache__/
+.vscode/
+.idea/

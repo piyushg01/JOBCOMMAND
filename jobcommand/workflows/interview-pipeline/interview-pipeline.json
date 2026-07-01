@@ -1,0 +1,128 @@
+{
+  "name": "interview-pipeline",
+  "description": "Orchestrates interview coaching preparation and recalculates overall job search health upon reaching interview milestones.",
+  "trigger": {
+    "type": "MANUAL",
+    "form": {
+      "inputs": [
+        {
+          "name": "application_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Application ID"
+        },
+        {
+          "name": "resume_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Resume ID"
+        },
+        {
+          "name": "interview_type",
+          "type": "ENUM",
+          "required": true,
+          "options": [
+            "HR",
+            "Technical",
+            "Managerial",
+            "Final"
+          ],
+          "label": "Interview Type"
+        }
+      ]
+    }
+  },
+  "start": {
+    "type": "MANUAL"
+  },
+  "nodes": [
+    {
+      "id": "validate_inputs",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "inputs.application_id != `null` && inputs.resume_id != `null` && inputs.interview_type != `null`",
+            "next_node_id": "run_interview_coach"
+          }
+        ]
+      }
+    },
+    {
+      "id": "run_interview_coach",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "interview-coach",
+        "input_mapping": {
+          "application_id": {
+            "type": "expression",
+            "value": "inputs.application_id"
+          },
+          "resume_id": {
+            "type": "expression",
+            "value": "inputs.resume_id"
+          },
+          "interview_type": {
+            "type": "expression",
+            "value": "inputs.interview_type"
+          }
+        }
+      }
+    },
+    {
+      "id": "run_health_coach",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "health-coach",
+        "input_mapping": {}
+      }
+    },
+    {
+      "id": "end_success",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "interview_type": "inputs.interview_type",
+          "preparation_generated": true,
+          "confidence_score": "run_interview_coach.outputs.confidence_score",
+          "technical_topics": "run_interview_coach.outputs.technical_topics",
+          "behavioral_questions": "run_interview_coach.outputs.behavioral_questions",
+          "health_score": "run_health_coach.outputs.overall_score",
+          "top_coaching_tips": "run_health_coach.outputs.ai_tips",
+          "workflow_status": "COMPLETED"
+        }
+      }
+    },
+    {
+      "id": "end_failed",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "workflow_status": "FAILED"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "validate_inputs",
+      "target": "run_interview_coach"
+    },
+    {
+      "id": "e2",
+      "source": "validate_inputs",
+      "target": "end_failed"
+    },
+    {
+      "id": "e3",
+      "source": "run_interview_coach",
+      "target": "run_health_coach"
+    },
+    {
+      "id": "e4",
+      "source": "run_health_coach",
+      "target": "end_success"
+    }
+  ]
+}

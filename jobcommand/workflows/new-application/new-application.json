@@ -1,0 +1,199 @@
+{
+  "name": "new-application",
+  "description": "Orchestrates initial AI analysis, tailoring, and outreach draft creation upon new job application.",
+  "trigger": {
+    "type": "MANUAL",
+    "form": {
+      "inputs": [
+        {
+          "name": "application_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Application ID"
+        },
+        {
+          "name": "resume_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Resume ID"
+        },
+        {
+          "name": "run_resume_tailoring",
+          "type": "BOOLEAN",
+          "required": true,
+          "default": false,
+          "label": "Run Resume Tailoring?"
+        },
+        {
+          "name": "generate_outreach_draft",
+          "type": "BOOLEAN",
+          "required": true,
+          "default": false,
+          "label": "Generate Outreach Draft?"
+        }
+      ]
+    }
+  },
+  "start": {
+    "type": "MANUAL"
+  },
+  "nodes": [
+    {
+      "id": "validate_inputs",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "inputs.application_id != `null` && inputs.resume_id != `null`",
+            "next_node_id": "run_resume_matcher"
+          }
+        ]
+      }
+    },
+    {
+      "id": "run_resume_matcher",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "resume-matcher",
+        "input_mapping": {
+          "application_id": {
+            "type": "expression",
+            "value": "inputs.application_id"
+          },
+          "resume_id": {
+            "type": "expression",
+            "value": "inputs.resume_id"
+          }
+        }
+      }
+    },
+    {
+      "id": "decide_tailor",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "run_resume_matcher.outputs.match_score < `80` && inputs.run_resume_tailoring == `true`",
+            "next_node_id": "run_resume_tailor"
+          }
+        ]
+      }
+    },
+    {
+      "id": "run_resume_tailor",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "resume-tailor",
+        "input_mapping": {
+          "application_id": {
+            "type": "expression",
+            "value": "inputs.application_id"
+          },
+          "resume_id": {
+            "type": "expression",
+            "value": "inputs.resume_id"
+          }
+        }
+      }
+    },
+    {
+      "id": "decide_outreach",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "inputs.generate_outreach_draft == `true`",
+            "next_node_id": "run_outreach_drafter"
+          }
+        ]
+      }
+    },
+    {
+      "id": "run_outreach_drafter",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "outreach-drafter",
+        "input_mapping": {
+          "application_id": {
+            "type": "expression",
+            "value": "inputs.application_id"
+          },
+          "resume_id": {
+            "type": "expression",
+            "value": "inputs.resume_id"
+          }
+        }
+      }
+    },
+    {
+      "id": "end_success",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "match_score": "run_resume_matcher.outputs.match_score",
+          "resume_tailored": "decide_tailor.condition_met",
+          "outreach_generated": "decide_outreach.condition_met",
+          "key_missing_skills": "run_resume_matcher.outputs.missing_skills",
+          "resume_suggestions": "run_resume_matcher.outputs.resume_suggestions",
+          "workflow_status": "COMPLETED"
+        }
+      }
+    },
+    {
+      "id": "end_failed",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "workflow_status": "FAILED"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "validate_inputs",
+      "target": "run_resume_matcher"
+    },
+    {
+      "id": "e2",
+      "source": "validate_inputs",
+      "target": "end_failed"
+    },
+    {
+      "id": "e3",
+      "source": "run_resume_matcher",
+      "target": "decide_tailor"
+    },
+    {
+      "id": "e4",
+      "source": "decide_tailor",
+      "target": "run_resume_tailor"
+    },
+    {
+      "id": "e5",
+      "source": "decide_tailor",
+      "target": "decide_outreach"
+    },
+    {
+      "id": "e6",
+      "source": "run_resume_tailor",
+      "target": "decide_outreach"
+    },
+    {
+      "id": "e7",
+      "source": "decide_outreach",
+      "target": "run_outreach_drafter"
+    },
+    {
+      "id": "e8",
+      "source": "decide_outreach",
+      "target": "end_success"
+    },
+    {
+      "id": "e9",
+      "source": "run_outreach_drafter",
+      "target": "end_success"
+    }
+  ]
+}

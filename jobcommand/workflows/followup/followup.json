@@ -1,0 +1,150 @@
+{
+  "name": "followup",
+  "description": "Orchestrates follow-up message generation for job applications based on elapsed duration.",
+  "trigger": {
+    "type": "MANUAL",
+    "form": {
+      "inputs": [
+        {
+          "name": "application_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Application ID"
+        },
+        {
+          "name": "resume_id",
+          "type": "UUID",
+          "required": true,
+          "label": "Resume ID"
+        },
+        {
+          "name": "days_since_application",
+          "type": "INTEGER",
+          "required": true,
+          "label": "Days Since Application"
+        },
+        {
+          "name": "followup_type",
+          "type": "ENUM",
+          "required": true,
+          "options": [
+            "First Follow-up",
+            "Second Follow-up",
+            "Final Follow-up"
+          ],
+          "label": "Follow-up Type"
+        }
+      ]
+    }
+  },
+  "start": {
+    "type": "MANUAL"
+  },
+  "nodes": [
+    {
+      "id": "validate_inputs",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "inputs.application_id != `null` && inputs.resume_id != `null` && inputs.days_since_application != `null` && inputs.followup_type != `null`",
+            "next_node_id": "check_timing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "check_timing",
+      "type": "DECISION",
+      "config": {
+        "rules": [
+          {
+            "condition": "inputs.days_since_application < `5`",
+            "next_node_id": "end_not_recommended"
+          }
+        ]
+      }
+    },
+    {
+      "id": "run_outreach_drafter",
+      "type": "AGENT",
+      "config": {
+        "agent_name": "outreach-drafter",
+        "input_mapping": {
+          "application_id": {
+            "type": "expression",
+            "value": "inputs.application_id"
+          },
+          "resume_id": {
+            "type": "expression",
+            "value": "inputs.resume_id"
+          },
+          "message_type": {
+            "type": "expression",
+            "value": "inputs.followup_type"
+          }
+        }
+      }
+    },
+    {
+      "id": "end_not_recommended",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "message": "Follow-up not recommended yet.",
+          "workflow_status": "SKIPPED"
+        }
+      }
+    },
+    {
+      "id": "end_success",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "followup_type": "inputs.followup_type",
+          "recommended_timing": "run_outreach_drafter.outputs.recommended_followup_timing",
+          "generated_draft": "run_outreach_drafter.outputs.message_body",
+          "channel": "run_outreach_drafter.outputs.recommended_channel",
+          "human_approval_required": true,
+          "workflow_status": "COMPLETED"
+        }
+      }
+    },
+    {
+      "id": "end_failed",
+      "type": "END",
+      "config": {
+        "outputs": {
+          "workflow_status": "FAILED"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "validate_inputs",
+      "target": "check_timing"
+    },
+    {
+      "id": "e2",
+      "source": "validate_inputs",
+      "target": "end_failed"
+    },
+    {
+      "id": "e3",
+      "source": "check_timing",
+      "target": "end_not_recommended"
+    },
+    {
+      "id": "e4",
+      "source": "check_timing",
+      "target": "run_outreach_drafter"
+    },
+    {
+      "id": "e5",
+      "source": "run_outreach_drafter",
+      "target": "end_success"
+    }
+  ]
+}

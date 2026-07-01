@@ -1,0 +1,21 @@
+{
+  "name": "match_resume",
+  "description": "Performs keyword-based resume matching and skill gap analysis for a target job application.",
+  "type": "API",
+  "visibility": "POD",
+  "code": { "$file": "code.py" },
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "applications",
+        "permission_ids": ["datastore.table.read", "datastore.record.read"]
+      },
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "resumes",
+        "permission_ids": ["datastore.table.read", "datastore.record.read"]
+      }
+    ]
+  }
+}
